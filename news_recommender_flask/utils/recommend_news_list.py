@@ -1,4 +1,10 @@
+import configparser
+import os
+
 from openai import OpenAI
+
+_config = configparser.ConfigParser()
+_config.read(os.path.join(os.path.dirname(__file__), "..", "config", "config.ini"))
 from utils.mysql_utils import mysql_utils
 from utils.prompt import News_Recommendation_Prompt,News_Recommendation_Prompt_Chinese
 from utils.parse_utils import parse_response_news
@@ -7,8 +13,10 @@ from db.history_sql import History_sql
 from datetime import datetime,timedelta
 
 def llm_recommend_news(parse_prompt,user_input):
-    client = OpenAI(api_key='sk-SqklZhtBglH1iuhN0fF466F38bD7420f9cE1C2C05c29165c',
-                    base_url = 'https://hb.rcouyi.com/v1')
+    client = OpenAI(
+        api_key=_config.get("llm", "api"),
+        base_url=_config.get("llm", "base_url"),
+    )
 
     response = client.chat.completions.create(
     model="claude-3-opus-20240229",
